@@ -1,249 +1,146 @@
 import React, { useState } from "react";
-import { Calculator, Clock, DollarSign, Shield, Check, Phone, ArrowRight, Sparkles } from "lucide-react";
+import { Phone, CheckCircle2, Clock, Calendar, ArrowRight, ShieldCheck } from "lucide-react";
 
-interface Scenario {
+interface QuickOption {
   id: string;
-  label: string;
-  baseFee: number;
-  desc: string;
+  emoji: string;
+  title: string;
+  price: string;
+  subtitle: string;
 }
 
-interface LockType {
-  id: string;
-  name: string;
-  addedFee: number;
-  pickEase: string;
-}
-
-interface Area {
-  id: string;
-  name: string;
-  estMinutes: string;
-}
-
-const SCENARIOS: Scenario[] = [
+const OPTIONS: QuickOption[] = [
   {
-    id: "lockout",
-    label: "Emergency Home Lockout",
-    baseFee: 75,
-    desc: "Locked outside your house or apartment. Non-destructive picking priority.",
-  },
-  {
-    id: "jammed",
-    label: "Jammed Deadbolt / Broken Key",
-    baseFee: 85,
-    desc: "Key broke inside cylinder or bolt mechanism stuck inside the strike plate.",
+    id: "locked_out",
+    emoji: "🚪",
+    title: "Locked Out Right Now",
+    price: "$75 Flat",
+    subtitle: "We arrive in 15–25 mins and gently unlock your house door.",
   },
   {
     id: "rekey",
-    label: "Deadbolt Rekeying (Change Keys)",
-    baseFee: 65,
-    desc: "Repin existing deadbolts so old keys no longer work. Great for new moves.",
+    emoji: "🔑",
+    title: "Change My Keys (Rekey)",
+    price: "$65 Flat",
+    subtitle: "Keep your existing locks, but make old keys stop working.",
   },
   {
-    id: "install",
-    label: "New Deadbolt / Smart Lock Install",
-    baseFee: 95,
-    desc: "Install high-security deadbolt or electronic keypad (Schlage, Yale, August).",
+    id: "broken",
+    emoji: "🛠️",
+    title: "Fix Jammed / Broken Lock",
+    price: "$85 Flat",
+    subtitle: "Key snapped inside or deadbolt stuck in the frame.",
   },
-];
-
-const LOCK_TYPES: LockType[] = [
-  { id: "std", name: "Standard Deadbolt (Kwikset / Defiant / Schlage)", addedFee: 0, pickEase: "98% Non-Destructive" },
-  { id: "highsec", name: "High-Security (Medeco / Mul-T-Lock / Primus)", addedFee: 30, pickEase: "Specialized Pick / Bypass" },
-  { id: "smart", name: "Keypad / Electronic Smart Deadbolt", addedFee: 20, pickEase: "Bypass & Decoding" },
-  { id: "double", name: "Double-Cylinder (Key required inside & out)", addedFee: 15, pickEase: "95% Non-Destructive" },
-];
-
-const AREAS: Area[] = [
-  { id: "riverwest", name: "Riverwest / Harambee", estMinutes: "10–15 mins" },
-  { id: "eastside", name: "East Side / Brady / Downer", estMinutes: "12–18 mins" },
-  { id: "downtown", name: "Downtown / Historic Third Ward", estMinutes: "12–18 mins" },
-  { id: "bayview", name: "Bay View / Walker's Point", estMinutes: "15–22 mins" },
-  { id: "tosa", name: "Wauwatosa / Washington Heights", estMinutes: "18–25 mins" },
-  { id: "shorewood", name: "Shorewood / Whitefish Bay", estMinutes: "15–20 mins" },
-  { id: "westallis", name: "West Allis / Greenfield", estMinutes: "20–28 mins" },
 ];
 
 export const DispatchCalculator: React.FC = () => {
-  const [selectedScenario, setSelectedScenario] = useState<string>("lockout");
-  const [selectedLock, setSelectedLock] = useState<string>("std");
-  const [selectedArea, setSelectedArea] = useState<string>("riverwest");
-
-  const scenario = SCENARIOS.find((s) => s.id === selectedScenario) || SCENARIOS[0];
-  const lock = LOCK_TYPES.find((l) => l.id === selectedLock) || LOCK_TYPES[0];
-  const area = AREAS.find((a) => a.id === selectedArea) || AREAS[0];
-
-  const totalPrice = scenario.baseFee + lock.addedFee;
+  const [selected, setSelected] = useState<string>("locked_out");
+  const [timeChoice, setTimeChoice] = useState<string>("now");
 
   return (
-    <section id="calculator" className="py-20 bg-[#070d1a] border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="calculator" className="py-16 bg-[#070d1a] border-t border-slate-800 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto">
         
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-14 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-xs font-mono text-amber-400">
-            <Calculator className="w-3.5 h-3.5" />
-            <span>TRANSPARENT PRICING GUARANTEE</span>
+        <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 font-bold text-xs uppercase tracking-wider">
+            Simple 2-Step Appointment Booker
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
-            Instant Estimate &amp; Response Window
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+            Choose What You Need — Clear Flat Rates
           </h2>
           <p className="text-slate-300 text-base sm:text-lg">
-            No bait-and-switch fees. Calculate your upfront cost and dispatch ETA based on your exact deadbolt situation and Milwaukee neighborhood.
+            No complicated jargon. Just choose your service, pick a time, and a friendly local locksmith will take care of you.
           </p>
         </div>
 
-        {/* Interactive Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          {/* Controls Form (8 cols) */}
-          <div className="lg:col-span-7 space-y-8 glass-card p-6 sm:p-8 rounded-3xl border border-blue-500/20">
-            
-            {/* 1. Situation */}
-            <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-slate-400 block mb-3">
-                Step 1: Select Your Situation
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {SCENARIOS.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setSelectedScenario(s.id)}
-                    className={`p-4 rounded-2xl text-left border transition-all ${
-                      selectedScenario === s.id
-                        ? "bg-amber-500/15 border-amber-500 text-white shadow-lg shadow-amber-500/10"
-                        : "bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700"
-                    }`}
-                  >
-                    <div className="font-bold text-sm text-white flex items-center justify-between">
-                      <span>{s.label}</span>
-                      {selectedScenario === s.id && <Check className="w-4 h-4 text-amber-400" />}
-                    </div>
-                    <div className="text-xs text-slate-400 mt-1 line-clamp-2">{s.desc}</div>
-                  </button>
-                ))}
+        {/* 3 Giant Friendly Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-10">
+          {OPTIONS.map((opt) => (
+            <button
+              key={opt.id}
+              onClick={() => setSelected(opt.id)}
+              className={`p-6 rounded-2xl text-left border-3 transition-all flex flex-col justify-between ${
+                selected === opt.id
+                  ? "bg-amber-500/20 border-amber-400 shadow-xl shadow-amber-500/15 scale-[1.02]"
+                  : "bg-slate-900/80 border-slate-800 hover:border-slate-600"
+              }`}
+            >
+              <div>
+                <div className="text-4xl mb-3">{opt.emoji}</div>
+                <h3 className="font-display font-extrabold text-xl text-white mb-1">
+                  {opt.title}
+                </h3>
+                <div className="text-2xl font-black text-amber-400 font-display mb-2">
+                  {opt.price}
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  {opt.subtitle}
+                </p>
               </div>
-            </div>
 
-            {/* 2. Deadbolt Type */}
-            <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-slate-400 block mb-3">
-                Step 2: Select Deadbolt Hardware Type
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {LOCK_TYPES.map((l) => (
-                  <button
-                    key={l.id}
-                    onClick={() => setSelectedLock(l.id)}
-                    className={`p-3.5 rounded-2xl text-left border transition-all ${
-                      selectedLock === l.id
-                        ? "bg-blue-500/15 border-blue-400 text-white shadow-lg shadow-blue-500/10"
-                        : "bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700"
-                    }`}
-                  >
-                    <div className="font-semibold text-xs text-white">{l.name}</div>
-                    <div className="text-[11px] text-blue-300 mt-1 font-mono">{l.pickEase}</div>
-                  </button>
-                ))}
+              <div className="mt-6 pt-4 border-t border-slate-800 w-full flex items-center justify-between text-xs font-bold">
+                <span className={selected === opt.id ? "text-amber-400" : "text-slate-400"}>
+                  {selected === opt.id ? "✓ Selected" : "Click to Choose"}
+                </span>
+                <span className="text-slate-400">Zero hidden fees</span>
               </div>
-            </div>
+            </button>
+          ))}
+        </div>
 
-            {/* 3. Location */}
-            <div>
-              <label className="text-xs font-mono uppercase tracking-wider text-slate-400 block mb-3">
-                Step 3: Select Your Location (Greater Milwaukee)
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                {AREAS.map((a) => (
-                  <button
-                    key={a.id}
-                    onClick={() => setSelectedArea(a.id)}
-                    className={`py-2.5 px-3 rounded-xl text-center text-xs border font-medium transition-all ${
-                      selectedArea === a.id
-                        ? "bg-slate-800 border-amber-400 text-amber-300 font-bold"
-                        : "bg-slate-950/70 border-slate-800 text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    {a.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+        {/* Step 2: When do you want us? */}
+        <div className="p-6 sm:p-8 rounded-3xl bg-[#0b1325] border-2 border-slate-800 text-center space-y-6">
+          <div className="font-display font-extrabold text-2xl text-white">
+            When do you want a technician?
           </div>
 
-          {/* Estimate Summary Card (5 cols) */}
-          <div className="lg:col-span-5 sticky top-28">
-            <div className="bg-gradient-to-b from-[#0f172a] to-[#0b1222] p-6 sm:p-8 rounded-3xl border-2 border-amber-500/40 shadow-2xl shadow-amber-500/10">
-              
-              <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-                <span className="font-mono text-xs uppercase text-amber-400 font-bold tracking-wider">
-                  UPFRONT QUOTE SUMMARY
-                </span>
-                <span className="text-xs text-slate-400 font-mono">Flat Rate</span>
-              </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => setTimeChoice("now")}
+              className={`w-full sm:w-auto px-8 py-4 rounded-2xl font-extrabold text-lg border-2 transition-all ${
+                timeChoice === "now"
+                  ? "bg-amber-500 border-amber-400 text-black shadow-lg"
+                  : "bg-slate-900 border-slate-700 text-white"
+              }`}
+            >
+              🚨 Right Now (15–25 Mins)
+            </button>
 
-              {/* Price Display */}
-              <div className="my-6">
-                <div className="text-xs text-slate-400 uppercase font-mono tracking-wider">
-                  Estimated Total Investment:
-                </div>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-5xl font-extrabold font-display text-white text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                    ${totalPrice}
-                  </span>
-                  <span className="text-sm text-slate-400">flat rate guarantee</span>
-                </div>
-                <div className="text-xs text-emerald-400 font-semibold mt-2 flex items-center gap-1.5">
-                  <Check className="w-4 h-4 shrink-0" />
-                  <span>Includes trip charge, assessment, and non-destructive bypass.</span>
-                </div>
-              </div>
+            <button
+              type="button"
+              onClick={() => setTimeChoice("later")}
+              className={`w-full sm:w-auto px-8 py-4 rounded-2xl font-extrabold text-lg border-2 transition-all ${
+                timeChoice === "later"
+                  ? "bg-amber-500 border-amber-400 text-black shadow-lg"
+                  : "bg-slate-900 border-slate-700 text-white"
+              }`}
+            >
+              📅 Later Today or Tomorrow
+            </button>
+          </div>
 
-              {/* ETA Display */}
-              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2 mb-6">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-mono">Destination:</span>
-                  <span className="font-semibold text-white">{area.name}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-mono">Estimated Arrival:</span>
-                  <span className="font-bold text-amber-400 flex items-center gap-1 font-mono">
-                    <Clock className="w-3.5 h-3.5" />
-                    {area.estMinutes}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-mono">Hardware:</span>
-                  <span className="text-slate-300">{lock.name.split(" ")[0]} Deadbolt</span>
-                </div>
-              </div>
+          {/* Big Action Buttons */}
+          <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="tel:4012560941"
+              className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-2xl shadow-xl shadow-amber-500/25 flex items-center justify-center gap-3 transition-transform active:scale-95"
+            >
+              <Phone className="w-7 h-7 fill-black" />
+              <span>Tap to Call (401) 256-0941</span>
+            </a>
 
-              {/* Dispatch Action */}
-              <div className="space-y-3">
-                <a
-                  href="tel:4012560941"
-                  className="w-full amber-glow-btn py-4 rounded-xl font-bold flex items-center justify-center gap-2 text-base text-black"
-                >
-                  <Phone className="w-5 h-5 fill-black" />
-                  <span>Dispatch Van: (401) 256-0941</span>
-                </a>
+            <a
+              href="#dispatch-form"
+              className="w-full sm:w-auto px-8 py-5 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-slate-700 text-white font-bold text-lg flex items-center justify-center gap-2"
+            >
+              <span>Or Fill 30-Second Web Form</span>
+              <ArrowRight className="w-5 h-5 text-amber-400" />
+            </a>
+          </div>
 
-                <a
-                  href="#dispatch-form"
-                  className="w-full py-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <span>Or Request via Instant Web Form</span>
-                  <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
-                </a>
-              </div>
-
-              <div className="mt-5 text-[11px] text-slate-500 text-center">
-                * Zero hidden fees. Rate confirmed verbally with technician before any work begins.
-              </div>
-
-            </div>
+          <div className="text-sm text-slate-400">
+            * Our friendly local technician will confirm everything with you directly before doing any work.
           </div>
 
         </div>
